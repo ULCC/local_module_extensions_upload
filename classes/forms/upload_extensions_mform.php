@@ -29,16 +29,50 @@ class upload_extensions_mform extends moodleform {
         $options = array(
             ',' => ',',
             '|' => '|'
-
         );
 
         $mform->addElement('select', 'delimiter', get_string('delimiter', 'local_module_extensions_upload'), $options);
+
+        // Module types such as Coursework or Quiz.
+        $options = array(
+            'coursework' => 'Coursework',
+            'quiz'       => 'Quiz'
+        );
+        $mform->addElement('select', 'moduletype', get_string('moduletype', 'local_module_extensions_upload'), $options);
+
+        $mform->addElement("html",' <div class="row">
+                                        <div class="col-md-3">&nbsp;</div>
+                                        <div class="col-md-9 moduletypeformat">
+                                            <p class="forcoursework">courseid, studentid, assessmentcode, extended_deadline, pre_defined_reason, extra_information_text</p>
+                                            <p class="forquiz">courseid, studentid, assessmentcode, extended_deadline</p>
+                                        </div>
+                                    </div>');
 
         $button_array[] =   $this->_form->createElement('submit', 'upload', get_string('upload', 'local_module_extensions_upload'));
         $button_array[] =  $mform->createElement('cancel');
         $mform->addGroup($button_array, 'buttonar', '', array(' '), false);
 
         $mform->closeHeaderBefore('upload');
+
+        $custom_html = '
+            <style type="text/css">
+                .forquiz { display: none; }
+            </style>
+            <script type="text/javascript">
+                $(document).ready(function(){
+                    $("select#id_moduletype").on("change", function() {
+                        $(".moduletypeformat p").attr("style", "display: none;");
+                        if ($(this).val() == "coursework") {
+                            $(".forcoursework").attr("style", "display: block;");
+                        }
+                        else if ($(this).val() == "quiz") {
+                            $(".forquiz").attr("style", "display: block;");
+                        }
+                    });
+                });
+            </script>';
+
+        $mform->addElement("html", $custom_html);
     }
 
     function process_data($data,$filecontent) {
@@ -48,8 +82,8 @@ class upload_extensions_mform extends moodleform {
         @set_time_limit(0);
         raise_memory_limit(MEMORY_EXTRA);
 
-        $filename = $CFG->tempdir . '/coursework_extensions_upload/tempfile'.time().'.csv';
-        make_temp_directory('coursework_extensions_upload');
+        $filename = $CFG->tempdir . '/module_extensions_upload/tempfile'.time().'.csv';
+        make_temp_directory('module_extensions_upload');
 
 
         // Fix mac/dos newlines
@@ -64,13 +98,13 @@ class upload_extensions_mform extends moodleform {
 
         $importprocessor    =   new local_module_extensions_upload\processor();
 
-        $errors = $importprocessor->dataprocessor($filename, $data->delimiter);
+        $errors = $importprocessor->dataprocessor($filename, $data->moduletype, $data->delimiter);
 
 
         // Write results file
 
         // Prepare temp area.
-        $tempfolder = make_temp_directory('coursework_extensions_upload');
+        $tempfolder = make_temp_directory('module_extensions_upload');
         $tempfile = $tempfolder . '/' . rand();
         $date = date('d-m-Y H_i_s',time());
         $filetitle = $date.'.txt';

@@ -9,3 +9,4 @@ $string['upload']                           =   'Upload';
 $string['uploadextensions']                 =   'Upload Extensions';
 $string['uploadhistory']                    =   'View extension upload history';
 $string['userprofilecategory']              =   'Coursework Management';
+$string['moduletype']                       =   'Module type';

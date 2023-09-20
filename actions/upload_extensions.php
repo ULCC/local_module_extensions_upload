@@ -22,7 +22,7 @@ $PAGE->set_title(get_string('uploadextensions','local_module_extensions_upload')
 
 $PAGE->navbar->ignore_active();
 $PAGE->navbar->add(get_string('pluginname','local_module_extensions_upload'));
-
+$PAGE->requires->jquery();
 
 $mform       =      new  upload_extensions_mform();
 
