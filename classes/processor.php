@@ -51,7 +51,7 @@ class   processor     {
                     continue;
                 }
                 if ($line_of_text && $line_of_text[0] != null) {
-                    if (count($line_of_text) == 6 && $line_of_text[0] != '' && $line_of_text[1] != ''
+                    if ($line_of_text[0] != '' && $line_of_text[1] != ''
                         && $line_of_text[2] != '' && $line_of_text[3] != '') {
 
                         // find course by shortname $line_of_text[0]
@@ -62,7 +62,9 @@ class   processor     {
                             continue;
                         }
 
-                        $student = $DB->get_record('user', array('idnumber' => $line_of_text[1]));
+                        $record_spr = $DB->get_record('local_user_info_ext', ['value' => trim($line_of_text[1])], IGNORE_MULTIPLE);
+
+                        $student = $DB->get_record('user', array('id' => $record_spr->userid));
                         if(!$student){
                             $errors[$linenumber] = "Student doesn't exist";
                             $linenumber++;
