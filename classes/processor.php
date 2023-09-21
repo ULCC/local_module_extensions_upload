@@ -192,7 +192,7 @@ class   processor     {
                                         // Create or update the quiz override for the user
                                         $quizoverride = $DB->get_record('quiz_overrides', array('quiz' => $quiz->id, 'userid' => $student->id), '*');
                                         if (empty($quizoverride)) {
-                                            $quizoverride = new stdClass();
+                                            $quizoverride = new \stdClass();
                                             $quizoverride->quizid = $quiz->id;
                                             $quizoverride->userid = $student->id;
                                             $quizoverride->timestart = $quiz->timeopen;
