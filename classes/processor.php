@@ -198,6 +198,7 @@ class   processor     {
                                             $quizoverride->timestart = $quiz->timeopen;
                                             $quizoverride->timeclose = $extensiondate;
                                             $DB->insert_record('quiz_overrides', $quizoverride);
+                                            $added++;
                                         }
                                         else {
                                             if($extensiondate < $quizoverride->timeclose) {
@@ -207,6 +208,7 @@ class   processor     {
                                             }
                                             $quizoverride->timeclose = $extensiondate;
                                             $DB->update_record('quiz_overrides', $quizoverride);
+                                            $updated++;
                                         }
 
                                     } else {
