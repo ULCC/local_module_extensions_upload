@@ -10,6 +10,7 @@ use mod_coursework\models\user;
  */
 
 require_once($CFG->dirroot.'/config.php');
+require_once($CFG->libdir . '/accesslib.php');
 require_once($CFG->dirroot.'/mod/coursework/lib.php');
 
 use core\event\tag_added;
@@ -184,7 +185,7 @@ class   processor     {
 
                                 if ($cm = get_coursemodule_from_instance('quiz', $quiz->id)) {
                                     $course = $DB->get_record('course', array('id' => $quiz->course));
-                                    $context = context_module::instance($cm->id);
+                                    $context = \context_module::instance($cm->id);
 
                                     // Check if the user is enrolled in the course
                                     if (is_enrolled($context, $student->id, '', true)) {
