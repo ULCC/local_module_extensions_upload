@@ -193,9 +193,9 @@ class   processor     {
                                         $quizoverride = $DB->get_record('quiz_overrides', array('quiz' => $quiz->id, 'userid' => $student->id), '*');
                                         if (empty($quizoverride)) {
                                             $quizoverride = new \stdClass();
-                                            $quizoverride->quizid = $quiz->id;
+                                            $quizoverride->quiz = $quiz->id;
                                             $quizoverride->userid = $student->id;
-                                            $quizoverride->timestart = $quiz->timeopen;
+                                            $quizoverride->timeopen = $quiz->timeopen;
                                             $quizoverride->timeclose = $extensiondate;
                                             $DB->insert_record('quiz_overrides', $quizoverride);
                                             $added++;
