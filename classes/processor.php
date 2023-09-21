@@ -63,7 +63,7 @@ class   processor     {
                         }
 
                         $sql = 'SELECT * FROM {local_user_info_ext} WHERE ' . $DB->sql_compare_text('value') . ' = ' . $DB->sql_compare_text(':spr_number');
-                        $record_spr = $DB->get_record_sql('local_user_info_ext', ['spr_number' => trim($line_of_text[1])], IGNORE_MULTIPLE);
+                        $record_spr = $DB->get_record_sql($sql, ['spr_number' => trim($line_of_text[1])], IGNORE_MULTIPLE);
 
                         $student = $DB->get_record('user', array('id' => $record_spr->userid));
                         if(!$student){
