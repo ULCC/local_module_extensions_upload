@@ -340,7 +340,7 @@ class   processor     {
         else if ($moduletype == 'quiz') {
 
             if(count($activities) == 1) {
-                return $activities[0];
+                return $DB->get_record('quiz', ['id' => $activities[0]]);
             }
             else if (count($activities) > 1) { // skip if not found or found more than 1
                 return 'Found more than 1 quizzes with the same assessmentcode';
