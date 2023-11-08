@@ -3,6 +3,7 @@
 namespace local_module_extensions_upload;
 
 use mod_coursework\models\coursework;
+use mod_coursework\models\sub_timelimit;
 use mod_coursework\models\user;
 /**
  * Class processor
@@ -76,7 +77,7 @@ class   processor     {
                         // workout coursework from assessmentcode
                         $activity = $this->get_module_from_assessmentcode($course->id, $student->id, $line_of_text[2], $moduletype);
 
-                        if ($moduletype == 'coursework') {
+                        if ($moduletype == 'coursework_mitigations') {
 
                             $coursework = $activity;
 
@@ -128,6 +129,7 @@ class   processor     {
                                     $csvdata->extra_information_text = $line_of_text[5];
                                     $csvdata->extra_information_format = 1;
                                     $csvdata->type = 'extension';
+                                    $csvdata->timecreated = time();
 
                                     $DB->insert_record('coursework_mitigations', $csvdata);
                                     $added++;
@@ -142,10 +144,81 @@ class   processor     {
                                     $new_extension->extra_information_text = $line_of_text[5];
                                     $new_extension->extra_information_format = 1;
                                     $new_extension->type = 'extension';
+                                    $new_extension->timecreated = time();
 
                                     $DB->update_record('coursework_mitigations', $new_extension);
                                     $updated++;
 
+                                }
+
+                            } else {
+                                $errors[$linenumber] = $activity;
+                            }
+                        }
+                        else  if ($moduletype == 'coursework_overrides') {
+
+                            $coursework = $activity;
+
+                            if (is_object($coursework)) {
+
+                                // VALIDATE TIMELIMIT
+                                $user_timelimit = $coursework->get_allocatable_timelimit($student->id);
+                                // simple validation of timelimit
+                                $newtimelimit = $line_of_text[3];
+                                if(is_number($newtimelimit)){
+                                    $errors[$linenumber] = "Invalid timelimit";
+                                    $linenumber++;
+                                    continue;
+                                }
+
+                                // extension can't be smaller than user's deadline
+                                if($newtimelimit < $user_timelimit){
+                                    $errors[$linenumber] = "Time limit must be later than user's current time limit/override";
+                                    $linenumber++;
+                                    continue;
+                                }
+
+                                // check if the Begin Coursework button is not pressed
+                                $allocatable = user::find($student, false);
+                                $timelimit = new sub_timelimit($coursework, $allocatable);
+                                if ($timelimit->get_allocatable_sub_timelimit()) {
+                                    $errors[$linenumber] = "Override can't be applied as Coursework has begun";
+                                    $linenumber++;
+                                    continue;
+                                }
+
+                                // check if override for this user already exists
+                                $params = array('allocatableid' => $student->id,
+                                                'allocatabletype' => 'user',
+                                                'courseworkid' => $coursework->id());
+
+                                $override = $DB->get_record('coursework_overrides', $params);
+
+                                if (!$override) { // create a new override
+
+                                    $csvdata = new \stdClass();
+                                    //courseid, studentid, assessmentcode, timelimit
+
+                                    $csvdata->allocatableid = $student->id;
+                                    $csvdata->allocatabletype = 'user';
+                                    $csvdata->courseworkid = $coursework->id();
+                                    $csvdata->timelimit = $newtimelimit;
+                                    $csvdata->createdbyid = $USER->id;
+                                    $csvdata->timecreated = time();
+
+                                    $DB->insert_record('coursework_overrides', $csvdata);
+                                    $added++;
+
+                                } else { // update an override
+
+                                    $new_override = new \stdClass();
+                                    $new_override->id = $override->id;
+                                    $new_override->timelimit = $newtimelimit;
+                                    $new_override->createdbyid = $USER->id;
+                                    $new_override->timecreated = time();
+
+                                    $DB->update_record('coursework_overrides', $new_override);
+                                    $updated++;
                                 }
 
                             } else {
@@ -304,7 +377,7 @@ class   processor     {
             }
         }
 
-        if ($moduletype == 'coursework') {
+        if ($moduletype == 'courseworkmitigations' || $moduletype == 'courseworkoverrides') {
 
             if(count($activities) == 1) {
                 // get courseworkid

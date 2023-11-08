@@ -35,7 +35,8 @@ class upload_extensions_mform extends moodleform {
 
         // Module types such as Coursework or Quiz.
         $options = array(
-            'coursework' => 'Coursework',
+            'coursework_mitigations' => 'Coursework Mitigations',
+            'coursework_overrides' => 'Coursework Time Limit Override',
             'quiz'       => 'Quiz'
         );
         $mform->addElement('select', 'moduletype', get_string('moduletype', 'local_module_extensions_upload'), $options);
@@ -43,7 +44,8 @@ class upload_extensions_mform extends moodleform {
         $mform->addElement("html",' <div class="row">
                                         <div class="col-md-3">&nbsp;</div>
                                         <div class="col-md-9 moduletypeformat">
-                                            <p class="forcoursework">courseid, studentid, assessmentcode, extended_deadline, pre_defined_reason, extra_information_text</p>
+                                            <p class="forcourseworkmitigations">courseid, studentid, assessmentcode, extended_deadline, pre_defined_reason, extra_information_text</p>
+                                            <p class="forcourseworkoverrides">courseid, studentid, assessmentcode, timelimit</p>
                                             <p class="forquiz">courseid, studentid, assessmentcode, extended_deadline</p>
                                         </div>
                                     </div>');
@@ -57,13 +59,17 @@ class upload_extensions_mform extends moodleform {
         $custom_html = '
             <style type="text/css">
                 .forquiz { display: none; }
+                .forcourseworkoverrides { display: none; }
             </style>
             <script type="text/javascript">
                 $(document).ready(function(){
                     $("select#id_moduletype").on("change", function() {
                         $(".moduletypeformat p").attr("style", "display: none;");
-                        if ($(this).val() == "coursework") {
-                            $(".forcoursework").attr("style", "display: block;");
+                        if ($(this).val() == "coursework_mitigations") {
+                            $(".forcourseworkmitigations").attr("style", "display: block;");
+                        }
+                        else if ($(this).val() == "coursework_overrides") {
+                            $(".forcourseworkoverrides").attr("style", "display: block;");
                         }
                         else if ($(this).val() == "quiz") {
                             $(".forquiz").attr("style", "display: block;");
