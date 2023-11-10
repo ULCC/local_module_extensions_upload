@@ -165,7 +165,7 @@ class   processor     {
                                 $user_timelimit = $coursework->get_allocatable_timelimit($student->id);
                                 // simple validation of timelimit
                                 $newtimelimit = $line_of_text[3];
-                                if(is_number($newtimelimit)){
+                                if(!is_number($newtimelimit)){
                                     $errors[$linenumber] = "Invalid timelimit";
                                     $linenumber++;
                                     continue;
