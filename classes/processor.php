@@ -340,8 +340,15 @@ class   processor     {
         // find the group to which assessmentcode in specified course belongs to
         $group = $DB->get_record('groups', array('courseid'=>$courseid, 'name' => $assessmentcode));
 
-        // get module id for moduletype
-        $module = $DB->get_record('modules', array('name' => $moduletype));
+        if(strpos( $moduletype, '_') !== false){
+            //get first part of moduletype if with _
+            $type = strstr($moduletype, '_', true);
+        } else {
+            $type = $moduletype;
+        }
+
+        // get module id for module type
+        $module = $DB->get_record('modules', array('name' => $type));
 
         // get cmid for the specific activities that are not hidden
         if($group) {
@@ -377,7 +384,7 @@ class   processor     {
             }
         }
 
-        if ($moduletype == 'courseworkmitigations' || $moduletype == 'courseworkoverrides') {
+        if ($moduletype == 'coursework_mitigations' || $moduletype == 'coursework_overrides') {
 
             if(count($activities) == 1) {
                 // get courseworkid
