@@ -225,7 +225,7 @@ class   processor     {
                                 $errors[$linenumber] = $activity;
                             }
                         }
-                        else if ($moduletype == 'quiz') {
+                        else if ($moduletype == 'quiz_extensions') {
 
                             $quiz = $activity;
 
@@ -295,7 +295,71 @@ class   processor     {
                             else {
                                 $errors[$linenumber] = $activity;
                             }
+                        } else if ($moduletype == 'quiz_timelimit') {
+
+                            $quiz = $activity;
+
+                            if (is_object($quiz)) {
+
+                                // VALIDATE timelimit
+                                // simple validation of timelimit
+                                $newtimelimit = $line_of_text[3];
+
+                                if(!is_number($newtimelimit)){
+                                    $errors[$linenumber] = "Invalid timelimit";
+                                    $linenumber++;
+                                    continue;
+                                }
+
+
+                                // timelimit can't be smaller than user's deadline
+                                if($extensiondate < $quiz->timeclose) {
+                                    $errors[$linenumber] = "Time limit must be later than quiz time limit.";
+                                    $linenumber++;
+                                    continue;
+                                }
+
+                                if ($cm = get_coursemodule_from_instance('quiz', $quiz->id)) {
+                                    $course = $DB->get_record('course', array('id' => $quiz->course));
+                                    $context = \context_module::instance($cm->id);
+
+                                    // Check if the user is enrolled in the course
+                                    if (is_enrolled($context, $student->id, '', true)) {
+                                        // Create or update the quiz override for the user
+                                        $quizoverride = $DB->get_record('quiz_overrides', array('quiz' => $quiz->id, 'userid' => $student->id), '*');
+                                        if (empty($quizoverride)) {
+                                            $quizoverride = new \stdClass();
+                                            $quizoverride->quiz = $quiz->id;
+                                            $quizoverride->userid = $student->id;
+                                            $quizoverride->timelimit = $newtimelimit;
+                                            $DB->insert_record('quiz_overrides', $quizoverride);
+                                            $added++;
+                                        }
+                                        else {
+                                            if($extensiondate < $quizoverride->timelimit) {
+                                                $errors[$linenumber] = "Time limit date must be later than the current time limit override.";
+                                                $linenumber++;
+                                                continue;
+                                            }
+                                            $quizoverride->timelimit = $newtimelimit;
+                                            $DB->update_record('quiz_overrides', $quizoverride);
+                                            $updated++;
+                                        }
+
+                                    } else {
+                                        $errors[$linenumber] = "User is not enrolled in the course.";
+                                    }
+                                }
+                                else {
+                                    $errors[$linenumber] = "Course module not found.";
+                                }
+                            }
+                            else {
+                                $errors[$linenumber] = $activity;
+                            }
                         }
+
+
                     }
                     else {
                         $errors[$linenumber] = 'Wrong file format or any of the first 4 columns is empty';

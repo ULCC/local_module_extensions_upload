@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-$plugin->version = 2023110800;
+$plugin->version = 2023112000;
 $plugin->component = 'local_module_extensions_upload'; // Full name of the plugin (used for diagnostics)
 $plugin->requires = 2018112500;
 $plugin->dependencies = array(

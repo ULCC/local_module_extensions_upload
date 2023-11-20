@@ -36,8 +36,9 @@ class upload_extensions_mform extends moodleform {
         // Module types such as Coursework or Quiz.
         $options = array(
             'coursework_mitigations' => 'Coursework Mitigations',
-            'coursework_overrides' => 'Coursework Time Limit Override',
-            'quiz'       => 'Quiz'
+            'coursework_overrides'   => 'Coursework Time Limit Overrides',
+            'quiz_extensions'        => 'Quiz Extensions',
+            'quiz_timelimit'         => 'Quiz Time Limit Overrides'
         );
         $mform->addElement('select', 'moduletype', get_string('moduletype', 'local_module_extensions_upload'), $options);
 
@@ -46,7 +47,8 @@ class upload_extensions_mform extends moodleform {
                                         <div class="col-md-9 moduletypeformat">
                                             <p class="forcourseworkmitigations">courseid, studentid, assessmentcode, extended_deadline, pre_defined_reason, extra_information_text</p>
                                             <p class="forcourseworkoverrides">courseid, studentid, assessmentcode, timelimit</p>
-                                            <p class="forquiz">courseid, studentid, assessmentcode, extended_deadline</p>
+                                            <p class="forquizextensions">courseid, studentid, assessmentcode, extended_deadline</p>
+                                            <p class="forquiztimelimit">courseid, studentid, assessmentcode, timelimit</p>
                                         </div>
                                     </div>');
 
@@ -58,7 +60,8 @@ class upload_extensions_mform extends moodleform {
 
         $custom_html = '
             <style type="text/css">
-                .forquiz { display: none; }
+                .forquizextensions { display: none; }
+                .forquiztimelimit { display: none; }
                 .forcourseworkoverrides { display: none; }
             </style>
             <script type="text/javascript">
@@ -71,8 +74,11 @@ class upload_extensions_mform extends moodleform {
                         else if ($(this).val() == "coursework_overrides") {
                             $(".forcourseworkoverrides").attr("style", "display: block;");
                         }
-                        else if ($(this).val() == "quiz") {
-                            $(".forquiz").attr("style", "display: block;");
+                        else if ($(this).val() == "quiz_extensions") {
+                            $(".forquizextensions").attr("style", "display: block;");
+                        }
+                        else if ($(this).val() == "quiz_timelimit") {
+                            $(".forquiztimelimit").attr("style", "display: block;");
                         }
                     });
                 });
