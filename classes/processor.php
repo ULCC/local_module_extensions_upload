@@ -481,7 +481,7 @@ class   processor     {
 
             return $coursework;
         }
-        else if ($moduletype == 'quiz') {
+        else if ($moduletype == 'quiz_extensions' || $moduletype == 'quiz_timelimit') {
 
             if(count($activities) == 1) {
                 return $DB->get_record('quiz', ['id' => $activities[0]]);
