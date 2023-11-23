@@ -313,7 +313,7 @@ class   processor     {
 
 
                                 // timelimit can't be smaller than user's deadline
-                                if($extensiondate < $quiz->timeclose) {
+                                if($newtimelimit < $quiz->timelimit) {
                                     $errors[$linenumber] = "Time limit must be later than quiz time limit.";
                                     $linenumber++;
                                     continue;
