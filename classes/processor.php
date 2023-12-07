@@ -414,12 +414,11 @@ class   processor     {
         // get module id for module type
         $module = $DB->get_record('modules', array('name' => $type));
 
-        // get cmid for the specific activities that are not hidden
+        // get cmid for the specific activities
         if($group) {
             $sql = "SELECT * 
                 FROM {course_modules} 
                 WHERE module = :module 
-                AND visible = 1
                 AND course = :course
                 AND availability LIKE '%{\"type\":\"group\",\"id\":{$group->id}}%'";
 
