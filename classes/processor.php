@@ -447,7 +447,8 @@ class   processor     {
             }
         }
 
-        if ($moduletype == 'coursework_mitigations' || $moduletype == 'coursework_overrides') {
+        if ($moduletype == 'coursework_mitigations' || $moduletype == 'coursework_overrides' || $moduletype == 'coursework_temporary_exemption'
+            || $moduletype == 'coursework_permanent_exemption') {
 
             if(count($activities) == 1) {
                 // get courseworkid

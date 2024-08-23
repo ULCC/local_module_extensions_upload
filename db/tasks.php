@@ -14,9 +14,25 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-$plugin->version = 2023121206;
-$plugin->component = 'local_module_extensions_upload'; // Full name of the plugin (used for diagnostics)
-$plugin->requires = 2018112500;
-$plugin->dependencies = array(
-    'mod_coursework' => 2020022600
+/**
+ * Definition of Coursework module scheduled tasks.
+ *
+ * @package   mod_coursework
+ * @category  task
+ * @copyright 2014 ULCC
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+defined('MOODLE_INTERNAL') || die();
+
+$tasks = array(
+    array(
+        'classname' => 'local_module_extensions_upload\task\import_extensions',
+        'blocking' => 0,
+        'minute' => '0',
+        'hour' => '0',
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '*'
+    )
 );
