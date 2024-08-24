@@ -98,9 +98,9 @@ class import_data_processor     {
 
 
 
-                } else if ($record->type == 'coursework_overrides') {
+                } else if ($record->type == 'coursework_overrides' ) {
 
-                    if ($record->action == 'insert') {
+                    if ($record->action == 'insert' || $record->action == 'update') {
 
                         $result = $this->create_coursework_override($activity, $student, $course, $record);
 
@@ -110,7 +110,7 @@ class import_data_processor     {
 
                 } else if ($record->type == 'coursework_permanent_exemption') {
 
-                    if ($record->action == 'insert') {
+                    if ($record->action == 'insert' || $record->action == 'update') {
 
                         $result = $this->create_coursework_exemption($activity, $student, $course, $record,'permanent');
 
@@ -120,7 +120,7 @@ class import_data_processor     {
 
                 } else if ($record->type == 'coursework_temporary_exemption') {
 
-                    if ($record->action == 'insert') {
+                    if ($record->action == 'insert' || $record->action == 'update') {
                         $result = $this->create_coursework_exemption($activity, $student, $course, $record,'temporary');
                     } else if ($record->action == 'delete') {
                         $result =   $this->delete_coursework_exemption($activity, $student, $course, $record,'temporary');
@@ -128,7 +128,7 @@ class import_data_processor     {
 
                 }   else if ($record->type == 'quiz_extensions') {
 
-                    if ($record->action == 'insert') {
+                    if ($record->action == 'insert' || $record->action == 'update') {
 
                         $result = $this->create_quiz_extension($activity, $student, $course, $record);
 
@@ -153,7 +153,9 @@ class import_data_processor     {
 
                 }
 
-                $importresults[]    =   array('record'=>$record,'importresult'=>$result);
+                $result['timecreated']      =   time();
+
+                $importresults[]    =   array('record'=>$record,'result'=>$result);
 
 
 
@@ -162,6 +164,12 @@ class import_data_processor     {
 
             }
         }
+
+
+        $logger     =   new     module_ext_log();
+
+        $logger->log(2,'automatic',$importresults);
+
 
         print_r($importresults);
 
@@ -177,6 +185,12 @@ class import_data_processor     {
         global $USER, $DB;
 
         $coursework = $activity;
+
+        $result         =   array();
+        $result['courseid']     =   $course->id;
+        $result['studentid']    =   $student->id;
+        $result['activityid']   =   $activity->id;
+        $result['error']    =   true;
 
         $creatinguser   =   2; //TODO find out which user should be assigned as the creator
 
@@ -196,13 +210,14 @@ class import_data_processor     {
             $extensiondate = strtotime(str_replace('/', '-', $importrecord->date));
             // extension format validation
             if (!checkdate($datevalue[1], $datevalue[0], $yeartime[0]) || $timevalid == false) {
-                return array('error' => true, 'msg' => "Invalid extension date");
-
-
+                $result['msg']      =   "Invalid extension date";
+                return $result;
             }
+
             // extension can't be smaller than user's deadline
             if ($extensiondate < $user_deadline) {
-                return array('error' => true, 'msg' => "Extension date must be later than user's deadline/current extension");
+                $result['msg']      =   "Extension date must be later than user's deadline/current extension";
+                return $result;
             }
 
             // check if submission for this user already exists
@@ -230,8 +245,9 @@ class import_data_processor     {
 
                 $DB->insert_record('coursework_mitigations', $csvdata);
 
-                return array('error' => false, 'msg' => "coursework mitigation created");
-
+                $result['error']    =   false;
+                $result['msg']      =   "coursework mitigation created";
+                return $result;
 
             }  else { // update an extension
 
@@ -247,13 +263,13 @@ class import_data_processor     {
 
                 $DB->update_record('coursework_mitigations', $new_extension);
 
-                return array('error' => false, 'msg' => "coursework mitigation updated");
-
-
+                $result['error']    =   false;
+                $result['msg']      =   "coursework mitigation updated";
+                return $result;
             }
         }   else {
-            //$errors[$linenumber] = $activity;
-            return array('error' => true, 'msg' => "activity not found");
+            $result['msg']      =   "activity not found";
+            return $result;
         }
 
     }
@@ -266,6 +282,12 @@ class import_data_processor     {
 
         $creatinguser   =   2; //TODO find out which user should be assigned as the creator
 
+        $result         =   array();
+        $result['courseid']     =   $course->id;
+        $result['studentid']    =   $student->id;
+        $result['activityid']   =   $activity->id;
+        $result['error']    =   true;
+
         if (is_object($coursework)) {
 
             // VALIDATE TIMELIMIT
@@ -275,19 +297,22 @@ class import_data_processor     {
             // simple validation of timelimit
             $newtimelimit = $importrecord->timelimit;
             if(!is_number($newtimelimit)){
-                return array('error' => true, 'msg' => "Invalid timelimit");
+                $result['msg']      =   "Invalid timelimit";
+                return $result;
             }
 
             // extension can't be smaller than user's deadline
             if($newtimelimit < $user_timelimit){
-                return array('error' => true, 'msg' => "Time limit must be later than user's current time limit/override");
+                $result['msg']      =   "Time limit must be later than user's current time limit/override";
+                return $result;
             }
 
             // check if the Begin Coursework button is not pressed
             $allocatable = user::find($student, false);
             $timelimit = new sub_timelimit($coursework, $allocatable);
             if ($timelimit->get_allocatable_sub_timelimit()) {
-                return array('error' => true, 'msg' => "Override can't be applied as Coursework has begun");
+                $result['msg']      =   "Override can't be applied as Coursework has begun";
+                return $result;
             }
 
             // check if override for this user already exists
@@ -310,7 +335,10 @@ class import_data_processor     {
                 $csvdata->timecreated = time();
 
                 $DB->insert_record('coursework_overrides', $csvdata);
-                return array('error' => false, 'msg' => "coursework override created");
+
+                $result['error']    =   false;
+                $result['msg']      =   "coursework override created";
+                return $result;
 
             } else { // update an override
 
@@ -321,12 +349,16 @@ class import_data_processor     {
                 $new_override->timecreated = time();
 
                 $DB->update_record('coursework_overrides', $new_override);
-                return array('error' => false, 'msg' => "coursework override updated");
+
+                $result['error']    =   false;
+                $result['msg']      =   "coursework override updated";
+
+                return $result;
             }
 
         }   else {
-          //$errors[$linenumber] = $activity;
-            return array('error' => true, 'msg' => "activity not found");
+            $result['msg']      =   "activity not found";
+            return $result;
         }
     }
 
@@ -336,6 +368,12 @@ class import_data_processor     {
         $coursework = $activity;
 
         $creatinguser   =   2; //TODO find out which user should be assigned as the creator
+
+        $result         =   array();
+        $result['courseid']     =   $course->id;
+        $result['studentid']    =   $student->id;
+        $result['activityid']   =   $activity->id;
+        $result['error']        =   true;
 
         if (is_object($coursework)) {
 
@@ -364,8 +402,10 @@ class import_data_processor     {
 
                 $DB->insert_record('coursework_mitigations', $csvdata);
 
-                return array('error' => false, 'msg' => "coursework exemption created");
+                $result['error']    =   false;
+                $result['msg']      =   "coursework exemption created";
 
+                return $result;
 
             }  else { // update an extension
 
@@ -381,12 +421,14 @@ class import_data_processor     {
 
                 $DB->update_record('coursework_mitigations', $new_extension);
 
-                return array('error' => false, 'msg' => "coursework exemption updated");
+                $result['error']    =   false;
+                $result['msg']      =   "coursework exemption updated";
 
-
+                return $result;
             }
         }   else {
-            return array('error' => true, 'msg' => "activity not found");
+            $result['msg']      =   "activity not found";
+            return $result;
         }
     }
 
@@ -397,6 +439,12 @@ class import_data_processor     {
         $quiz = $activity;
 
         $creatinguser   =   2; //TODO find out which user should be assigned as the creator
+
+        $result         =   array();
+        $result['courseid']     =   $course->id;
+        $result['studentid']    =   $student->id;
+        $result['activityid']   =   $activity->id;
+        $result['error']        =   true;
 
         if (is_object($quiz)) {
 
@@ -413,12 +461,14 @@ class import_data_processor     {
             $extensiondate = strtotime(str_replace('/', '-', $importrecord->date));
             // extension format validation
             if(!checkdate( $datevalue[1] , $datevalue[0] , $yeartime[0]) || $timevalid == false){
-                return array('error' => true, 'msg' => "Invalid extension date");
+                $result['msg']      =   "Invalid extension date";
+                return $result;
             }
 
             // extension can't be smaller than user's deadline
             if($extensiondate < $quiz->timeclose) {
-                return array('error' => true, 'msg' => "Extension date must be later than quiz close time.");
+                $result['msg']      =   "Extension date must be later than quiz close time.";
+                return $result;
             }
 
             if ($cm = get_coursemodule_from_instance('quiz', $quiz->id)) {
@@ -436,29 +486,40 @@ class import_data_processor     {
                         $quizoverride->timeopen = $quiz->timeopen;
                         $quizoverride->timeclose = $extensiondate;
                         $DB->insert_record('quiz_overrides', $quizoverride);
-                        return array('error' => false, 'msg' => "quiz extension created");
+
+                        $result['error']    =   false;
+                        $result['msg']      =   "quiz extension created";
+
+                        return $result;
 
                     }
                     else {
                         if($extensiondate < $quizoverride->timeclose) {
-
-                            return array('error' => true, 'msg' => "Extension date must be later than the current extension time.");
+                            $result['msg']      =   "Extension date must be later than the current extension time.";
+                            return $result;
                         }
                         $quizoverride->timeclose = $extensiondate;
                         $DB->update_record('quiz_overrides', $quizoverride);
-                        return array('error' => false, 'msg' => "quiz extension updated");
+
+                        $result['error']    =   false;
+                        $result['msg']      =   "quiz extension updated";
+
+                        return $result;
                      }
 
                 } else {
-                    return array('error' => true, 'msg' => "User is not enrolled in the course.");
+                    $result['msg']      =   "User is not enrolled in the course.";
+                    return $result;
                 }
             }
             else {
-                return array('error' => true, 'msg' => "Course module not found.");
+                $result['msg']      =   "Course module not found.";
+                return $result;
             }
         }
         else {
-            return array('error' => true, 'msg' => "activity not found");
+            $result['msg']      =   "activity not found";
+            return $result;
         }
     }
 
@@ -471,6 +532,12 @@ class import_data_processor     {
 
         $creatinguser   =   2; //TODO find out which user should be assigned as the creator
 
+        $result         =   array();
+        $result['courseid']     =   $course->id;
+        $result['studentid']    =   $student->id;
+        $result['activityid']   =   $activity->id;
+        $result['error']        =   true;
+
         if (is_object($quiz)) {
 
             // VALIDATE timelimit
@@ -478,13 +545,15 @@ class import_data_processor     {
             $newtimelimit = $importrecord->timelimit;
 
             if(!is_number($newtimelimit)){
-                return array('error' => true, 'msg' => "Invalid timelimit");
+                $result['msg']      =   "Invalid timelimit";
+                return $result;
             }
 
 
             // timelimit can't be smaller than user's deadline
             if($newtimelimit < $quiz->timelimit) {
-                return array('error' => true, 'msg' => "Time limit must be later than quiz time limit.");
+                $result['msg']      =   "Time limit must be later than quiz time limit.";
+                return $result;
             }
 
             if ($cm = get_coursemodule_from_instance('quiz', $quiz->id)) {
@@ -501,25 +570,35 @@ class import_data_processor     {
                         $quizoverride->userid = $student->id;
                         $quizoverride->timelimit = $newtimelimit;
                         $DB->insert_record('quiz_overrides', $quizoverride);
-                        return array('error' => false, 'msg' => "quiz timelimit created");
 
+                        $result['error']    =   false;
+                        $result['msg']      =   "quiz timelimit created";
+
+                        return $result;
                     }
                     else {
                         $quizoverride->timelimit = $newtimelimit;
                         $DB->update_record('quiz_overrides', $quizoverride);
-                        return array('error' => false, 'msg' => "quiz timelimit updated");
+
+                        $result['error']    =   false;
+                        $result['msg']      =   "quiz timelimit updated";
+
+                        return $result;
                     }
 
                 } else {
-                    return array('error' => true, 'msg' => "User is not enrolled in the course.");
+                    $result['msg']      =   "User is not enrolled in the course.";
+                    return $result;
                 }
             }
             else {
-                return array('error' => true, 'msg' => "Course module not found.");
+                $result['msg']      =   "Course module not found.";
+                return $result;
             }
         }
         else {
-            return array('error' => true, 'msg' => "activity not found");
+            $result['msg']      =   "activity not found";
+            return $result;
         }
 
     }
@@ -530,6 +609,12 @@ class import_data_processor     {
         global  $DB;
 
         $quiz = $activity;
+
+        $result         =   array();
+        $result['courseid']     =   $course->id;
+        $result['studentid']    =   $student->id;
+        $result['activityid']   =   $activity->id;
+        $result['error']    =   true;
 
         if (is_object($quiz)) {
 
@@ -545,19 +630,25 @@ class import_data_processor     {
 
                         //delete record
                         $DB->delete_records('quiz_overrides',array('id'=>$quizoverride->id));
-                        return array('error' => false, 'msg' => "quiz {$type} record deleted");
+                        $result['error']    =   false;
+                        $result['msg']      =   "quiz {$type} record deleted";
+                        return $result;
 
                     }   else {
-                        return array('error' => true, 'msg' => "quiz {$type} record was not found");
+                        $result['msg']      =   "quiz {$type} record was not found";
+                        return $result;
                     }
                 }   else    {
-                    return array('error' => true, 'msg' => "User is not enrolled in the course.");
+                    $result['msg']      =   "User is not enrolled in the course.";
+                    return $result;
                 }
             }   else    {
-                return array('error' => true, 'msg' => "Course module not found.");
+                $result['msg']      =   "Course module not found.";
+                return $result;
             }
         }   else    {
-            return array('error' => true, 'msg' => "activity not found");
+            $result['msg']      =   "activity not found";
+            return $result;
         }
     }
 
@@ -571,6 +662,12 @@ class import_data_processor     {
         global $USER, $DB;
 
         $coursework = $activity;
+
+        $result         =   array();
+        $result['courseid']     =   $course->id;
+        $result['studentid']    =   $student->id;
+        $result['activityid']   =   $activity->id;
+        $result['error']        =   true;
 
         if (is_object($coursework)) {
 
@@ -586,13 +683,17 @@ class import_data_processor     {
 
                 //delete record
                 $DB->delete_records('coursework_mitigations',array('id'=>$mitigation->id));
-                return array('error' => false, 'msg' => "mitigation record deleted");
+                $result['error']    =   false;
+                $result['msg']      =   "mitigation record deleted";
+                return $result;
 
             }   else {
-                return array('error' => true, 'msg' => "mitigation record was not found");
+                $result['msg']      =   "mitigation record was not found";
+                return $result;
             }
         }   else {
-            return array('error' => true, 'msg' => "activity not found");
+            $result['msg']      =   "activity not found";
+            return $result;
         }
 
 
@@ -604,6 +705,12 @@ class import_data_processor     {
         global $DB;
         
         $coursework = $activity;
+
+        $result         =   array();
+        $result['courseid']     =   $course->id;
+        $result['studentid']    =   $student->id;
+        $result['activityid']   =   $activity->id;
+        $result['error']        =   true;
 
         if (is_object($coursework)) {
 
@@ -618,13 +725,17 @@ class import_data_processor     {
 
                 //delete record
                 $DB->delete_records('coursework_overrides',array('id'=>$override->id));
-                return array('error' => false, 'msg' => "override record deleted");
+                $result['error']    =   false;
+                $result['msg']      =   "override record deleted";
+                return $result;
             }   else {
-                return array('error' => true, 'msg' => "override record was not found");
+                $result['msg']      =   "override record was not found";
+                return $result;
             }
 
         }   else {
-            return array('error' => true, 'msg' => "activity not found");
+            $result['msg']      =   "activity not found";
+            return $result;
         }
         
     }
@@ -634,6 +745,12 @@ class import_data_processor     {
         global $USER, $DB;
 
         $coursework = $activity;
+
+        $result         =   array();
+        $result['courseid']     =   $course->id;
+        $result['studentid']    =   $student->id;
+        $result['activityid']   =   $activity->id;
+        $result['error']        =   true;
 
         if (is_object($coursework)) {
 
@@ -648,12 +765,16 @@ class import_data_processor     {
             if (!empty($mitigation)) { // create a new extension
                 $DB->delete_records('coursework_mitigations',array('id'=>$mitigation->id));
 
-                return array('error' => false, 'msg' => "{$exemptiontype} exemption record deleted");
+                $result['error']    =   false;
+                $result['msg']      =   "{$exemptiontype} exemption record deleted";
+                return $result;
             } else {
-                return array('error' => true, 'msg' => "{$exemptiontype} exemption record was not found");
+                $result['msg']      =   "{$exemptiontype} exemption record was not found";
+                return $result;
             }
         }   else {
-            return array('error' => true, 'msg' => "activity not found");
+            $result['msg']      =   "activity not found";
+            return $result;
         }
 
     }
