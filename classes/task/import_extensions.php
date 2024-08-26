@@ -3,6 +3,8 @@
 namespace local_module_extensions_upload\task;
 
 use local_module_extensions_upload\import_extension_data;
+use local_module_extensions_upload\module_ext_log;
+use mod_data\output\empty_database_action_bar;
 
 /**
 * A scheduled task for the coursework module cron.
@@ -48,7 +50,7 @@ class import_extensions extends \core\task\scheduled_task {
         }
 
 
-        if (empty($missingdata)) {
+        if (empty($missingsettings)) {
 
             if ($pluginconfig->dblocation == "external") {
 
@@ -98,14 +100,109 @@ class import_extensions extends \core\task\scheduled_task {
             
             $importdataprocessor    =   new     \local_module_extensions_upload\import_data_processor();
 
-            $importdataprocessor->process_data($importedextensionrecords);
+            $importresults      =   $importdataprocessor->process_data($importedextensionrecords);
+            $logger     =   new     module_ext_log();
 
-
-
+            $logger->log(2,'automatic',$importresults);
 
 
         }   else    {
             if (!empty($pluginconfig->output_debug))  mtrace("The following config settings are missing : ".implode(" ,",$missingsettings));
+
+        }
+
+        $recorddata =   "";
+
+        if (!empty($missingsettings))   {
+
+            $msgheader      =   get_string('missingconfigsubject','local_module_extensions_upload');
+            $msgdata       =   get_string('missingconfig','local_module_extensions_upload',implode("<br />",$missingsettings));
+
+        }   else {
+
+            $msgheader  =   'Module extension import result';
+
+            $added  =   0;
+            $updated    =   0;
+            $deleted    =   0;
+            $errors     =   0;
+
+            foreach($importresults  as  $res)   {
+
+                $extensionrec       =       $res['record'];
+                $resultrecord       =       (is_object($res['result']))  ?  $res['result'] : (object) $res['result'] ;
+
+                if (!empty($resultrecord->error))  {
+                    $errors++;
+                }  else if ($resultrecord->actualaction ==  'insert')   {
+                    $added++;
+                }   else if ($resultrecord->actualaction ==  'update')   {
+                    $updated++;
+                } else if ($resultrecord->actualaction ==  'delete')   {
+                    $deleted++;
+                }
+
+
+
+            }
+
+            $msgdataobj         =   array();
+            $msgdataobj['importdate']   =   date('d-m-Y H:i');
+            $msgdataobj['recordcount']   =   count($importresults);
+            $msgdataobj['added']   =   $added;
+            $msgdataobj['updated']   =   $updated;
+            $msgdataobj['deleted']   =   $deleted;
+            $msgdataobj['errors']   =   $errors;
+
+
+            $msgdata    =   get_string('import_result_notification','local_module_extensions_upload',$msgdataobj);
+            $tablerowdata   =   "";
+
+            foreach($importresults  as  $res)   {
+
+                $extensionrec       =       $res['record'];
+                $resultrecord       =       (is_object($res['result']))  ?  $res['result'] : (object) $res['result'] ;
+
+                $rowdata            =   array();
+
+                $rowdata['course']        =   $extensionrec->course;
+                $rowdata['user']        =   $extensionrec->user;
+                $rowdata['assessment']        =   $extensionrec->assessment;
+                $rowdata['msg']        =   $resultrecord->msg;
+
+                $tablerowdata         .=     get_string('import_result_notification_tr','local_module_extensions_upload',$rowdata);
+            }
+
+            $recorddata     =  get_string('import_result_notification_table','local_module_extensions_upload',$tablerowdata);
+
+
+
+
+        }
+
+        $notifyusers    =   explode(",",$pluginconfig->lognotificationusers );
+
+        foreach($notifyusers   as  $nu) {
+
+            // New approach.
+            $eventdata = new \core\message\message();
+            $eventdata->component = 'local_module_extensions_upload';
+            $eventdata->name = 'automatic_update_result';
+            $eventdata->userfrom = \core_user::get_noreply_user();
+            $eventdata->userto = $nu;
+            $eventdata->subject = $msgheader;
+
+            $eventdata->fullmessage = $msgdata . $recorddata;
+            $eventdata->fullmessageformat = FORMAT_HTML;
+            $eventdata->fullmessagehtml = $msgdata . $recorddata;;
+            $eventdata->smallmessage = $msgdata;
+            $eventdata->notification = 1;
+            // $eventdata->contexturl =
+            //   $CFG->wwwroot . '/local/coursework/view.php?id=' . $coursework->get_coursemodule_id();
+            //$eventdata->contexturlname = 'View the submission here';
+            //$eventdata->courseid = $this->coursework->course;
+
+            message_send($eventdata);
         }
 
 

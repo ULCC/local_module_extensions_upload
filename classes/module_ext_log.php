@@ -52,6 +52,7 @@ class module_ext_log     {
 
         $logrecord->data        =   serialize($extensionrec);
         $logrecord->action      =   $extensionrec->action;
+        $logrecord->actualaction      =   (!empty($resultrecord->actualaction))   ? $resultrecord->actualaction  :  '';
         $logrecord->result      =   $resultrecord->msg;
         $logrecord->timecreated      =   $resultrecord->timecreated;
         $logrecord->error       =   (!empty($extensionrec->error))  ? 1  : 0;

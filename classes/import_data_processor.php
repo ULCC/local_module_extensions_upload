@@ -166,12 +166,7 @@ class import_data_processor     {
         }
 
 
-        $logger     =   new     module_ext_log();
-
-        $logger->log(2,'automatic',$importresults);
-
-
-        print_r($importresults);
+        return  $importresults;
 
 
 
@@ -245,6 +240,7 @@ class import_data_processor     {
 
                 $DB->insert_record('coursework_mitigations', $csvdata);
 
+                $result['actualaction']    =   'insert';
                 $result['error']    =   false;
                 $result['msg']      =   "coursework mitigation created";
                 return $result;
@@ -263,6 +259,7 @@ class import_data_processor     {
 
                 $DB->update_record('coursework_mitigations', $new_extension);
 
+                $result['actualaction']    =   'update';
                 $result['error']    =   false;
                 $result['msg']      =   "coursework mitigation updated";
                 return $result;
@@ -336,6 +333,7 @@ class import_data_processor     {
 
                 $DB->insert_record('coursework_overrides', $csvdata);
 
+                $result['actualaction']    =   'insert';
                 $result['error']    =   false;
                 $result['msg']      =   "coursework override created";
                 return $result;
@@ -350,6 +348,7 @@ class import_data_processor     {
 
                 $DB->update_record('coursework_overrides', $new_override);
 
+                $result['actualaction']    =   'update';
                 $result['error']    =   false;
                 $result['msg']      =   "coursework override updated";
 
@@ -402,6 +401,7 @@ class import_data_processor     {
 
                 $DB->insert_record('coursework_mitigations', $csvdata);
 
+                $result['actualaction']    =   'insert';
                 $result['error']    =   false;
                 $result['msg']      =   "coursework exemption created";
 
@@ -421,6 +421,7 @@ class import_data_processor     {
 
                 $DB->update_record('coursework_mitigations', $new_extension);
 
+                $result['actualaction']    =   'update';
                 $result['error']    =   false;
                 $result['msg']      =   "coursework exemption updated";
 
@@ -487,6 +488,7 @@ class import_data_processor     {
                         $quizoverride->timeclose = $extensiondate;
                         $DB->insert_record('quiz_overrides', $quizoverride);
 
+                        $result['actualaction']    =   'insert';
                         $result['error']    =   false;
                         $result['msg']      =   "quiz extension created";
 
@@ -501,6 +503,7 @@ class import_data_processor     {
                         $quizoverride->timeclose = $extensiondate;
                         $DB->update_record('quiz_overrides', $quizoverride);
 
+                        $result['actualaction']    =   'update';
                         $result['error']    =   false;
                         $result['msg']      =   "quiz extension updated";
 
@@ -571,6 +574,7 @@ class import_data_processor     {
                         $quizoverride->timelimit = $newtimelimit;
                         $DB->insert_record('quiz_overrides', $quizoverride);
 
+                        $result['actualaction']    =   'insert';
                         $result['error']    =   false;
                         $result['msg']      =   "quiz timelimit created";
 
@@ -580,6 +584,7 @@ class import_data_processor     {
                         $quizoverride->timelimit = $newtimelimit;
                         $DB->update_record('quiz_overrides', $quizoverride);
 
+                        $result['actualaction']    =   'update';
                         $result['error']    =   false;
                         $result['msg']      =   "quiz timelimit updated";
 
@@ -630,6 +635,7 @@ class import_data_processor     {
 
                         //delete record
                         $DB->delete_records('quiz_overrides',array('id'=>$quizoverride->id));
+                        $result['actualaction']    =   'delete';
                         $result['error']    =   false;
                         $result['msg']      =   "quiz {$type} record deleted";
                         return $result;
@@ -683,6 +689,7 @@ class import_data_processor     {
 
                 //delete record
                 $DB->delete_records('coursework_mitigations',array('id'=>$mitigation->id));
+                $result['actualaction']    =   'delete';
                 $result['error']    =   false;
                 $result['msg']      =   "mitigation record deleted";
                 return $result;
@@ -725,6 +732,7 @@ class import_data_processor     {
 
                 //delete record
                 $DB->delete_records('coursework_overrides',array('id'=>$override->id));
+                $result['actualaction']    =   'delete';
                 $result['error']    =   false;
                 $result['msg']      =   "override record deleted";
                 return $result;
@@ -765,6 +773,7 @@ class import_data_processor     {
             if (!empty($mitigation)) { // create a new extension
                 $DB->delete_records('coursework_mitigations',array('id'=>$mitigation->id));
 
+                $result['actualaction']    =   'delete';
                 $result['error']    =   false;
                 $result['msg']      =   "{$exemptiontype} exemption record deleted";
                 return $result;

@@ -26,7 +26,7 @@ function xmldb_local_module_extensions_upload_upgrade($oldversion) {
 
     $dbman = $DB->get_manager();
     // Adding index to table local_user_info_ext.
-    if ($oldversion < 2024082304) {
+    if ($oldversion < 2024082305) {
         $table = new xmldb_table('local_module_ext_upload');
         $table->add_field('id', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
         $table->add_field('userid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null);
@@ -44,14 +44,15 @@ function xmldb_local_module_extensions_upload_upgrade($oldversion) {
         $table->add_field('id', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
         $table->add_field('uploadid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null);
         $table->add_field('course', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('courseid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('courseid', XMLDB_TYPE_INTEGER, '11', null, null, null, null);
         $table->add_field('student', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('studentid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('studentid', XMLDB_TYPE_INTEGER, '11', null, null, null, null);
         $table->add_field('assessment', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('activityid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('activityid', XMLDB_TYPE_INTEGER, '11', null, null, null, null);
         $table->add_field('data', XMLDB_TYPE_TEXT, null, null, null, null, null);
         $table->add_field('error', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('action', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('action', XMLDB_TYPE_CHAR, '255', null, null, null, null);
+        $table->add_field('actualaction', XMLDB_TYPE_CHAR, '255', null, null, null, null);
         $table->add_field('result', XMLDB_TYPE_TEXT, null, null, null, null, null);
         $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
 
@@ -62,7 +63,7 @@ function xmldb_local_module_extensions_upload_upgrade($oldversion) {
             $dbman->create_table($table);
         }
 
-        upgrade_plugin_savepoint(true, 2024082304, 'local', 'module_extensions_upload');
+        upgrade_plugin_savepoint(true, 2024082305, 'local', 'module_extensions_upload');
     }	
     return true;
 }

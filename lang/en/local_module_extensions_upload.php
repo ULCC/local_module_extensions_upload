@@ -56,8 +56,32 @@ $string['importdata_desc']                  =   'Import extension data from an e
 $string['import_table']                     =   'Import table name';
 $string['import_table_desc']                =   'The name of the table that the data will be imported from ';
 
+$string['import_result_notification']                    =   'Imported on: {$a->importdate} <br />
+                                                 Uploaded by: Automatic upload <br />
+                                                 Records imported: {$a->recordcount} <br />
+                                                 Extensions added:  {$a->added} <br/>
+                                                 Extensions updated: {$a->updated} <br />
+                                                 Extensions deleted: {$a->deleted} <br />
+                                                 Errors: {$a->errors}';
+
+$string['import_result_notification_table']                    = '<br/><table><thead>
+<tr><td>Course</td><td>Student</td><td>Assessment</td><td>Result</td></tr>
+</thead>
+
+{$a}
+
+</table>';
+
+$string['import_result_notification_tr']                    = '<tr><td>{$a->course}</td><td>{$a->user}</td><td>{$a->assessment}</td><td>{$a->msg}</td></tr>';
+
 $string['local']                            =   'Local';
 
+$string['log_heading']              =   'Import results';
+$string['lognotificationusers']             =   'User IDs';
+$string['lognotificationusers_desc']             =   'IDs of users to send import result information to';
+
+$string['missingconfigsubject']             =   'Module extension automatic upload settings missing';
+$string['missingconfigsubject']             =   'The automatic import of module extensions failed due to the following settings being missing: ';
 $string['module_extensions_upload:view']    =   'View/access Coursework extension bulk upload';
 $string['moduletype']                       =   'Module type';
 $string['nopermission']                     =   'You do not have the permission to access this page.';

@@ -9,7 +9,7 @@ class import_extension_data     {
 
     function    check_config($pluginconfig)  {
 
-        $configfields   =   array('import_table','id','user','course','assessment','date','timelimit','type','reason_code','reason_desc','action','timecreated');
+        $configfields   =   array('tablename','id','user','course','assessment','date','timelimit','type','reason_code','reason_desc','action','timecreated');
         $missing        =   array();
 
         foreach ($configfields as $field) {

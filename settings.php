@@ -77,7 +77,9 @@ if (!is_null($localexits)) {
     $settings->add(new admin_setting_configtext('local_module_extensions_upload/action', get_string('action', 'local_module_extensions_upload'), get_string('action_desc', 'local_module_extensions_upload'), ''));
     $settings->add(new admin_setting_configtext('local_module_extensions_upload/timecreated', get_string('timecreated', 'local_module_extensions_upload'), get_string('timecreated', 'local_module_extensions_upload'), ''));
 
+    $settings->add(new admin_setting_heading('log_heading_section', get_string('log_heading', 'local_module_extensions_upload') ,''));
 
+    $settings->add(new admin_setting_configtext('local_module_extensions_upload/lognotificationusers', get_string('lognotificationusers', 'local_module_extensions_upload'), get_string('lognotificationusers_desc', 'local_module_extensions_upload'), ''));
 
 
 

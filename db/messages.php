@@ -14,9 +14,22 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-$plugin->version = 2024082306;
-$plugin->component = 'local_module_extensions_upload'; // Full name of the plugin (used for diagnostics)
-$plugin->requires = 2018112500;
-$plugin->dependencies = array(
-    'mod_coursework' => 2020022600
+/**
+ * @package    mod
+ * @subpackage coursework
+ * @copyright  2012 University of London Computer Centre {@link ulcc.ac.uk}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+defined('MOODLE_INTERNAL') || die();
+
+global $CFG;
+
+$messageproviders = array(
+    'automatic_update_result' => array(
+        'defaults' => array(
+            'popup' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDIN + MESSAGE_DEFAULT_LOGGEDOFF,
+            'email' => MESSAGE_FORCED,
+        ),
+    )
 );
