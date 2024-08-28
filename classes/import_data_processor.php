@@ -21,8 +21,6 @@ class import_data_processor     {
 
         $converteddata  =   new \stdClass();
 
-        print_r($pconfig);
-
         $converteddata->user    =   (!empty($record->{$pconfig->user}))  ?   $record->{$pconfig->user}   :   "";
         $converteddata->course    =   (!empty($record->{$pconfig->course}))  ?   $record->{$pconfig->course}   :   "";
         $converteddata->assessment    =   (!empty($record->{$pconfig->assessment}))  ?   $record->{$pconfig->assessment}   :   "";
@@ -157,8 +155,6 @@ class import_data_processor     {
 
                 $importresults[]    =   array('record'=>$record,'result'=>$result);
 
-
-
                 //log result of record import
 
 
@@ -290,7 +286,6 @@ class import_data_processor     {
             // VALIDATE TIMELIMIT
             $user_timelimit = $coursework->get_allocatable_timelimit($student->id);
 
-            print_r($user_timelimit);
             // simple validation of timelimit
             $newtimelimit = $importrecord->timelimit;
             if(!is_number($newtimelimit)){
