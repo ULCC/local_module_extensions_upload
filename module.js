@@ -120,6 +120,8 @@ M.local_module_extensions_upload = {
             $('#id_s_local_module_extensions_upload_reason_desc').prop('disabled', state);
             $('#id_s_local_module_extensions_upload_action').prop('disabled', state);
             $('#id_s_local_module_extensions_upload_timecreated').prop('disabled', state);
+            $('#id_s_local_module_extensions_upload_lognotificationusers').prop('disabled', state);
+
 
 
         },
