@@ -58,14 +58,16 @@ class import_data_processor     {
 
 
             //check if the course can be found
-            $course = $DB->get_record('course', array('shortname' => $record->course));
+            $course = $DB->get_record('course', array($pluginconfig->courseidentifier => $record->course));
             if (!$course) {
                 $result = array('error' => true, 'msg' => "Course doesn't exist");
                 $processrecord  =   false;
             }
 
-            //check if the student can be founc
-            $student = $DB->get_record('user', array('idnumber' => $record->user));
+
+
+            //check if the student can be found
+            $student = $DB->get_record('user', array($pluginconfig->useridentifier => $record->user));
             if (!$student) {
                 $result = array('error' => true, 'msg' => "Student doesn't exist");
                 $processrecord  =   false;

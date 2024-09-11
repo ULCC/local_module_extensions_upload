@@ -8,6 +8,8 @@ $string['action_desc']                      =   'Action field';
 
 $string['course']                           =   'Course field';
 $string['course_desc']                      =   'Course field';
+$string['courseidentifier']                   =   'Course identifier';
+$string['courseidentifier_desc']              =   'Identifier used to match import course with moodle course';
 
 $string['date']                           =   'Date field';
 $string['date_desc']                      =   'Date field';
@@ -46,8 +48,10 @@ $string['debugdb_desc']                     =   '';
 $string['delimiter']                        =   'Delimiter';
 
 $string['external']                        =   'External';
+$string['email']                            =   'Email';
 
 $string['id']                               =   'ID field';
+$string['idnumber']                         =   'Idnumber';
 $string['id_desc']                          =   'ID field';
 $string['importextensions']                 =   'Import extensions';
 $string['importdata']                       =   'Import extension data';
@@ -87,7 +91,7 @@ $string['moduletype']                       =   'Module type';
 $string['nopermission']                     =   'You do not have the permission to access this page.';
 
 $string['output_debug']                     =   'Output debug';
-$string['output_debug_descd']                     =   'Display debug on the screen';
+$string['output_debug_desc']                     =   'Display debug on the screen';
 
 $string['pluginname']                       =   'Module Extension upload';
 
@@ -98,6 +102,7 @@ $string['reason_desc']                      =   'Reason description field';
 $string['reason_desc_desc']                      =   'Reason description field';
 
 $string['selectfile']                       =   'Select file';
+$string['shortname']                        =   'Shortname';
 
 $string['tablename']                       =   'Table name';
 $string['tablename_desc']                   =   'Table name desc';
@@ -113,7 +118,10 @@ $string['type']                             =   'Type field';
 $string['type_desc']                        =   'Type field';
 
 $string['user']                             =   'User field';
+$string['username']                             =   'Username';
 $string['user_desc']                        =   'User field';
+$string['useridentifier']                   =   'User identifier';
+$string['useridentifier_desc']              =   'Identifier used to match import user with moodle user';
 
 $string['upload']                           =   'Upload';
 $string['uploadextensions']                 =   'Upload Extensions';
