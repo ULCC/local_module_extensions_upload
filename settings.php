@@ -77,10 +77,6 @@ if (!is_null($localexits)) {
     $settings->add(new admin_setting_configtext('local_module_extensions_upload/action', get_string('action', 'local_module_extensions_upload'), get_string('action_desc', 'local_module_extensions_upload'), ''));
     $settings->add(new admin_setting_configtext('local_module_extensions_upload/timecreated', get_string('timecreated', 'local_module_extensions_upload'), get_string('timecreated', 'local_module_extensions_upload'), ''));
 
-    $settings->add(new admin_setting_heading('log_heading_section', get_string('log_heading', 'local_module_extensions_upload') ,''));
-
-    $settings->add(new admin_setting_configtext('local_module_extensions_upload/lognotificationusers', get_string('lognotificationusers', 'local_module_extensions_upload'), get_string('lognotificationusers_desc', 'local_module_extensions_upload'), ''));
-
     $options = array("shortname"=>get_string('shortname', 'local_module_extensions_upload'), "idnumber"=>get_string('idnumber', 'local_module_extensions_upload'));
 
     $settings->add(new admin_setting_configselect('local_module_extensions_upload/courseidentifier', get_string('courseidentifier', 'local_module_extensions_upload'), get_string('courseidentifier_desc', 'local_module_extensions_upload'), '', $options));
@@ -89,6 +85,12 @@ if (!is_null($localexits)) {
     $options = array("username"=>get_string('username', 'local_module_extensions_upload'), "idnumber"=>get_string('idnumber', 'local_module_extensions_upload'), "email"=>get_string('email', 'local_module_extensions_upload'));
 
     $settings->add(new admin_setting_configselect('local_module_extensions_upload/useridentifier', get_string('useridentifier', 'local_module_extensions_upload'), get_string('useridentifier_desc', 'local_module_extensions_upload'), '', $options));
+
+
+    $settings->add(new admin_setting_heading('log_heading_section', get_string('log_heading', 'local_module_extensions_upload') ,''));
+
+    $settings->add(new admin_setting_configtext('local_module_extensions_upload/lognotificationusers', get_string('lognotificationusers', 'local_module_extensions_upload'), get_string('lognotificationusers_desc', 'local_module_extensions_upload'), ''));
+
 
 
 }
