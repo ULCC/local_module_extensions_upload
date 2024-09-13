@@ -36,7 +36,7 @@ class upload_extensions_mform extends moodleform {
         // Module types such as Coursework or Quiz.
         $options = array(
             'coursework_mitigations' => 'Coursework Mitigations',
-            'coursework_overrides'   => 'Coursework Time Limit Overrides',
+            //'coursework_overrides'   => 'Coursework Time Limit Overrides', - overrides are disabled at the moment in this version
             'quiz_extensions'        => 'Quiz Extensions',
             'quiz_timelimit'         => 'Quiz Time Limit Overrides'
         );

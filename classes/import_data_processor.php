@@ -74,12 +74,15 @@ class import_data_processor     {
 
             }
 
-            // workout coursework from assessmentcode
-            $activity = $uploadprocessor->get_module_from_assessmentcode($course->id, $student->id, $record->assessment, $record->type);
-            if (!is_object($activity)) {
-                //note in case of an get_module_from_assessmentcode returns the error instead of an object
-                $result = array('error' => true, 'msg' => $activity);
-                $processrecord  =   false;
+
+            if (!empty($course) && !empty($student)) {
+                // workout coursework from assessmentcode
+                $activity = $uploadprocessor->get_module_from_assessmentcode($course->id, $student->id, $record->assessment, $record->type);
+                if (!is_object($activity)) {
+                    //note in case of an get_module_from_assessmentcode returns the error instead of an object
+                    $result = array('error' => true, 'msg' => $activity);
+                    $processrecord = false;
+                }
             }
 
 
@@ -99,7 +102,7 @@ class import_data_processor     {
 
 
                 } else if ($record->type == 'coursework_overrides' ) {
-
+/*
                     if ($record->action == 'insert' || $record->action == 'update') {
 
                         $result = $this->create_coursework_override($activity, $student, $course, $record);
@@ -107,6 +110,8 @@ class import_data_processor     {
                     } else if ($record->action == 'delete') {
                         $result =   $this->delete_coursework_override($activity, $student, $course, $record);
                     }
+*/
+                    $result = array('error' => true, 'msg' => "Coursework overrides is currently disabled");
 
                 } else if ($record->type == 'coursework_permanent_exemption') {
 
@@ -153,14 +158,16 @@ class import_data_processor     {
 
                 }
 
-                $result['timecreated']      =   time();
 
-                $importresults[]    =   array('record'=>$record,'result'=>$result);
+
+
 
                 //log result of record import
 
 
             }
+            $result['timecreated']      =   time();
+            $importresults[]    =   array('record'=>$record,'result'=>$result);
         }
 
 

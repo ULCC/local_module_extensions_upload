@@ -69,14 +69,14 @@ $string['import_result_notification']                    =   'Imported on: {$a->
                                                  Errors: {$a->errors}';
 
 $string['import_result_notification_table']                    = '<br/><table><thead>
-<tr><td>Course</td><td>Student</td><td>Assessment</td><td>Result</td></tr>
+<tr><td>Error</td><td>Course</td><td>Student</td><td>Assessment</td><td>Result</td></tr>
 </thead>
 
 {$a}
 
 </table>';
 
-$string['import_result_notification_tr']                    = '<tr><td>{$a->course}</td><td>{$a->user}</td><td>{$a->assessment}</td><td>{$a->msg}</td></tr>';
+$string['import_result_notification_tr']                    = '<tr><td>{$a->error}</td><td>{$a->course}</td><td>{$a->user}</td><td>{$a->assessment}</td><td>{$a->msg}</td></tr>';
 
 $string['local']                            =   'Local';
 

@@ -154,7 +154,6 @@ class import_extensions extends \core\task\scheduled_task {
             $msgdataobj['deleted']   =   $deleted;
             $msgdataobj['errors']   =   $errors;
 
-
             $msgdata    =   get_string('import_result_notification','local_module_extensions_upload',$msgdataobj);
             $tablerowdata   =   "";
 
@@ -168,6 +167,7 @@ class import_extensions extends \core\task\scheduled_task {
                 $rowdata['course']        =   $extensionrec->course;
                 $rowdata['user']        =   $extensionrec->user;
                 $rowdata['assessment']        =   $extensionrec->assessment;
+                $rowdata['error']             =    (!empty($resultrecord->error))   ?   "*" : "";
                 $rowdata['msg']        =   $resultrecord->msg;
 
                 $tablerowdata         .=     get_string('import_result_notification_tr','local_module_extensions_upload',$rowdata);
