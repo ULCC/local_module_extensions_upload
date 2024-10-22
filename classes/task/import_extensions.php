@@ -97,6 +97,8 @@ class import_extensions extends \core\task\scheduled_task {
 
             }
 
+            set_config('lastcron',time(),'local_module_extensions_upload');
+
             
             $importdataprocessor    =   new     \local_module_extensions_upload\import_data_processor();
 
